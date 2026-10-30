@@ -1,0 +1,6 @@
+{
+  "name": "Oftalmomed — Centro Diagnóstico São Mateus 1",
+  "description": "Sistema de lançamento de exames oftalmológicos, preenchimento automático, controle de repasses e relatórios mensais de produtividade para o Centro Diagnóstico São Mateus 1.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

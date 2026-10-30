@@ -1,0 +1,387 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net: Default-deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Hardened Global Helpers
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isAllowedClinicScope(ownerId) {
+      return ownerId == 'sao_mateus_1' || (request.auth != null && ownerId == request.auth.uid);
+    }
+
+    // Validation Blueprints
+    function isValidExamRecord(data) {
+      return data.keys().hasAll([
+          'ownerId',
+          'seqNumber',
+          'pedidoEmed',
+          'pacienteNome',
+          'dataRealizado',
+          'mesCompetencia',
+          'convenio',
+          'unidadeIndicadora',
+          'medicoOpto',
+          'repasseValor',
+          'valorExame',
+          'exameTipo',
+          'observacoes',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'ownerId',
+          'seqNumber',
+          'pedidoEmed',
+          'pacienteNome',
+          'dataRealizado',
+          'mesCompetencia',
+          'convenio',
+          'unidadeIndicadora',
+          'medicoOpto',
+          'repasseValor',
+          'valorExame',
+          'exameTipo',
+          'observacoes',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.ownerId is string
+        && data.ownerId.size() >= 1
+        && data.ownerId.size() <= 128
+        && data.ownerId.matches('^[a-zA-Z0-9_\\-]+$')
+        && isAllowedClinicScope(data.ownerId)
+        && data.seqNumber is int
+        && data.seqNumber >= 1
+        && data.seqNumber <= 999999
+        && data.pedidoEmed is string
+        && data.pedidoEmed.size() <= 40
+        && data.pacienteNome is string
+        && data.pacienteNome.size() >= 1
+        && data.pacienteNome.size() <= 120
+        && data.dataRealizado is string
+        && data.dataRealizado.size() == 10
+        && data.dataRealizado.matches('^\\d{4}-\\d{2}-\\d{2}$')
+        && data.mesCompetencia is string
+        && data.mesCompetencia.size() == 7
+        && data.mesCompetencia.matches('^\\d{4}-\\d{2}$')
+        && data.convenio is string
+        && data.convenio.size() >= 1
+        && data.convenio.size() <= 60
+        && data.unidadeIndicadora is string
+        && data.unidadeIndicadora.size() <= 60
+        && data.medicoOpto is string
+        && data.medicoOpto.size() <= 80
+        && (data.repasseValor is int || data.repasseValor is float)
+        && data.repasseValor >= 0
+        && data.repasseValor <= 100000
+        && (data.valorExame is int || data.valorExame is float)
+        && data.valorExame >= 0
+        && data.valorExame <= 100000
+        && data.exameTipo is string
+        && data.exameTipo.size() >= 1
+        && data.exameTipo.size() <= 60
+        && data.observacoes is string
+        && data.observacoes.size() <= 300
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidPricingRule(data) {
+      return data.keys().hasAll([
+          'ownerId',
+          'convenio',
+          'exameTipo',
+          'valorExame',
+          'repasseValor',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'ownerId',
+          'convenio',
+          'exameTipo',
+          'valorExame',
+          'repasseValor',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.ownerId is string
+        && data.ownerId.size() >= 1
+        && data.ownerId.size() <= 128
+        && data.ownerId.matches('^[a-zA-Z0-9_\\-]+$')
+        && isAllowedClinicScope(data.ownerId)
+        && data.convenio is string
+        && data.convenio.size() >= 1
+        && data.convenio.size() <= 60
+        && data.exameTipo is string
+        && data.exameTipo.size() >= 1
+        && data.exameTipo.size() <= 60
+        && (data.valorExame is int || data.valorExame is float)
+        && data.valorExame >= 0
+        && data.valorExame <= 100000
+        && (data.repasseValor is int || data.repasseValor is float)
+        && data.repasseValor >= 0
+        && data.repasseValor <= 100000
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidExamDelivery(data) {
+      return data.keys().hasAll([
+          'ownerId',
+          'examRecordId',
+          'seqNumber',
+          'pedidoEmed',
+          'pacienteNome',
+          'exameTipo',
+          'dataRealizado',
+          'pacienteLogin',
+          'pacienteSenha',
+          'arquivoNome',
+          'arquivoMime',
+          'arquivoConteudo',
+          'laudoObservacoes',
+          'retiradoEm',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'ownerId',
+          'examRecordId',
+          'seqNumber',
+          'pedidoEmed',
+          'pacienteNome',
+          'exameTipo',
+          'dataRealizado',
+          'pacienteLogin',
+          'pacienteSenha',
+          'arquivoNome',
+          'arquivoMime',
+          'arquivoConteudo',
+          'laudoObservacoes',
+          'retiradoEm',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.ownerId is string
+        && data.ownerId.size() >= 1
+        && data.ownerId.size() <= 128
+        && data.ownerId.matches('^[a-zA-Z0-9_\\-]+$')
+        && isAllowedClinicScope(data.ownerId)
+        && data.examRecordId is string
+        && data.examRecordId.size() >= 1
+        && data.examRecordId.size() <= 128
+        && data.seqNumber is int
+        && data.seqNumber >= 1
+        && data.seqNumber <= 999999
+        && data.pedidoEmed is string
+        && data.pedidoEmed.size() <= 40
+        && data.pacienteNome is string
+        && data.pacienteNome.size() >= 1
+        && data.pacienteNome.size() <= 120
+        && data.exameTipo is string
+        && data.exameTipo.size() >= 1
+        && data.exameTipo.size() <= 60
+        && data.dataRealizado is string
+        && data.dataRealizado.size() == 10
+        && data.dataRealizado.matches('^\\d{4}-\\d{2}-\\d{2}$')
+        && data.pacienteLogin is string
+        && data.pacienteLogin.size() >= 1
+        && data.pacienteLogin.size() <= 60
+        && data.pacienteSenha is string
+        && data.pacienteSenha.size() >= 1
+        && data.pacienteSenha.size() <= 60
+        && data.arquivoNome is string
+        && data.arquivoNome.size() <= 180
+        && data.arquivoMime is string
+        && data.arquivoMime.size() <= 80
+        && data.arquivoConteudo is string
+        && data.arquivoConteudo.size() <= 850000
+        && data.laudoObservacoes is string
+        && data.laudoObservacoes.size() <= 1000
+        && data.retiradoEm is string
+        && data.retiradoEm.size() <= 40
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidClinicConfig(data) {
+      return data.keys().hasAll([
+          'ownerId',
+          'unidadePadrao',
+          'metaMensalExames',
+          'metaMensalFaturamento',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'ownerId',
+          'unidadePadrao',
+          'metaMensalExames',
+          'metaMensalFaturamento',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.ownerId is string
+        && data.ownerId.size() >= 1
+        && data.ownerId.size() <= 128
+        && data.ownerId.matches('^[a-zA-Z0-9_\\-]+$')
+        && isAllowedClinicScope(data.ownerId)
+        && data.unidadePadrao is string
+        && data.unidadePadrao.size() >= 1
+        && data.unidadePadrao.size() <= 60
+        && data.metaMensalExames is int
+        && data.metaMensalExames >= 1
+        && data.metaMensalExames <= 50000
+        && (data.metaMensalFaturamento is int || data.metaMensalFaturamento is float)
+        && data.metaMensalFaturamento >= 0
+        && data.metaMensalFaturamento <= 10000000
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    // Collection: /exam_records/{recordId}
+    match /exam_records/{recordId} {
+      allow get: if isValidId(recordId) && isAllowedClinicScope(existing().ownerId);
+      allow list: if isAllowedClinicScope(existing().ownerId);
+
+      allow create: if isValidId(recordId)
+        && isValidExamRecord(incoming())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      allow update: if isValidId(recordId)
+        && isValidExamRecord(incoming())
+        && isAllowedClinicScope(existing().ownerId)
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'seqNumber',
+          'pedidoEmed',
+          'pacienteNome',
+          'dataRealizado',
+          'mesCompetencia',
+          'convenio',
+          'unidadeIndicadora',
+          'medicoOpto',
+          'repasseValor',
+          'valorExame',
+          'exameTipo',
+          'observacoes',
+          'updatedAt'
+        ]);
+
+      allow delete: if isValidId(recordId) && isAllowedClinicScope(existing().ownerId);
+    }
+
+    // Collection: /pricing_rules/{ruleId}
+    match /pricing_rules/{ruleId} {
+      allow get: if isValidId(ruleId) && isAllowedClinicScope(existing().ownerId);
+      allow list: if isAllowedClinicScope(existing().ownerId);
+
+      allow create: if isValidId(ruleId)
+        && isValidPricingRule(incoming())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      allow update: if isValidId(ruleId)
+        && isValidPricingRule(incoming())
+        && isAllowedClinicScope(existing().ownerId)
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'convenio',
+          'exameTipo',
+          'valorExame',
+          'repasseValor',
+          'updatedAt'
+        ]);
+
+      allow delete: if isValidId(ruleId) && isAllowedClinicScope(existing().ownerId);
+    }
+
+    // Collection: /exam_deliveries/{deliveryId}
+    match /exam_deliveries/{deliveryId} {
+      allow get: if isValidId(deliveryId) && isAllowedClinicScope(existing().ownerId);
+      allow list: if isAllowedClinicScope(existing().ownerId);
+
+      allow create: if isValidId(deliveryId)
+        && isValidExamDelivery(incoming())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      allow update: if isValidId(deliveryId)
+        && isValidExamDelivery(incoming())
+        && isAllowedClinicScope(existing().ownerId)
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'examRecordId',
+          'seqNumber',
+          'pedidoEmed',
+          'pacienteNome',
+          'exameTipo',
+          'dataRealizado',
+          'pacienteLogin',
+          'pacienteSenha',
+          'arquivoNome',
+          'arquivoMime',
+          'arquivoConteudo',
+          'laudoObservacoes',
+          'retiradoEm',
+          'updatedAt'
+        ]);
+
+      allow delete: if isValidId(deliveryId) && isAllowedClinicScope(existing().ownerId);
+    }
+
+    // Collection: /clinic_configs/{userId}
+    match /clinic_configs/{userId} {
+      allow get: if isValidId(userId) && isAllowedClinicScope(userId);
+
+      allow create: if isValidId(userId)
+        && isAllowedClinicScope(userId)
+        && isValidClinicConfig(incoming())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      allow update: if isValidId(userId)
+        && isValidClinicConfig(incoming())
+        && isAllowedClinicScope(userId)
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly([
+          'unidadePadrao',
+          'metaMensalExames',
+          'metaMensalFaturamento',
+          'updatedAt'
+        ]);
+
+      allow delete: if isValidId(userId) && isAllowedClinicScope(userId);
+    }
+
+    // Collection: /admins/{adminId}
+    match /admins/{adminId} {
+      allow get, list, create, update, delete: if false;
+    }
+  }
+}

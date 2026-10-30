@@ -1,0 +1,363 @@
+{
+  "entities": {
+    "ExamRecord": {
+      "title": "ExamRecord",
+      "description": "Registro de exame oftalmológico realizado no Centro Diagnóstico São Mateus 1.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Identificador da unidade/escopo do lançamento.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "seqNumber": {
+          "type": "integer",
+          "description": "Número sequencial do lançamento na planilha."
+        },
+        "pedidoEmed": {
+          "type": "string",
+          "description": "Código do pedido no sistema eMed.",
+          "maxLength": 40
+        },
+        "pacienteNome": {
+          "type": "string",
+          "description": "Nome completo do paciente.",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "dataRealizado": {
+          "type": "string",
+          "format": "date",
+          "description": "Data de realização do exame no formato YYYY-MM-DD.",
+          "minLength": 10,
+          "maxLength": 10,
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "mesCompetencia": {
+          "type": "string",
+          "description": "Mês de competência no formato YYYY-MM para relatórios mensais.",
+          "minLength": 7,
+          "maxLength": 7,
+          "pattern": "^\\d{4}-\\d{2}$"
+        },
+        "convenio": {
+          "type": "string",
+          "description": "Convênio ou modalidade (ex: SÃO MIGUEL SAÚDE, PARTICULAR, PART/ATO).",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "unidadeIndicadora": {
+          "type": "string",
+          "description": "Unidade indicadora do exame.",
+          "maxLength": 60
+        },
+        "medicoOpto": {
+          "type": "string",
+          "description": "Médico ou optometrista solicitante.",
+          "maxLength": 80
+        },
+        "repasseValor": {
+          "type": "number",
+          "description": "Valor de repasse da recepção pela realização do exame (3% Particular, 10% Convênios) em R$."
+        },
+        "valorExame": {
+          "type": "number",
+          "description": "Valor total do exame em R$."
+        },
+        "exameTipo": {
+          "type": "string",
+          "description": "Tipo de exame oftalmológico.",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "observacoes": {
+          "type": "string",
+          "description": "Observações e status de entrega do lançamento.",
+          "maxLength": 300
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp de criação no servidor."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp da última atualização no servidor."
+        }
+      },
+      "required": [
+        "ownerId",
+        "seqNumber",
+        "pedidoEmed",
+        "pacienteNome",
+        "dataRealizado",
+        "mesCompetencia",
+        "convenio",
+        "unidadeIndicadora",
+        "medicoOpto",
+        "repasseValor",
+        "valorExame",
+        "exameTipo",
+        "observacoes",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "PricingRule": {
+      "title": "PricingRule",
+      "description": "Regra de preenchimento automático de Valor do Exame e Repasse da Recepção por Convênio e Exame.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Identificador da unidade proprietária da regra.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "convenio": {
+          "type": "string",
+          "description": "Nome do convênio.",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "exameTipo": {
+          "type": "string",
+          "description": "Nome do exame.",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "valorExame": {
+          "type": "number",
+          "description": "Valor padrão do exame em R$."
+        },
+        "repasseValor": {
+          "type": "number",
+          "description": "Valor padrão de repasse da recepção em R$."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp de criação no servidor."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp de atualização no servidor."
+        }
+      },
+      "required": [
+        "ownerId",
+        "convenio",
+        "exameTipo",
+        "valorExame",
+        "repasseValor",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "ExamDelivery": {
+      "title": "ExamDelivery",
+      "description": "Credenciais de acesso (login e senha por paciente) e arquivo anexado para retirada online de exames.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Identificador da unidade.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "examRecordId": {
+          "type": "string",
+          "description": "ID ou chave da linha do exame correspondente.",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "seqNumber": {
+          "type": "integer",
+          "description": "Número sequencial da linha do exame."
+        },
+        "pedidoEmed": {
+          "type": "string",
+          "description": "Código do pedido eMed.",
+          "maxLength": 40
+        },
+        "pacienteNome": {
+          "type": "string",
+          "description": "Nome completo do paciente.",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "exameTipo": {
+          "type": "string",
+          "description": "Tipo do exame realizado.",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "dataRealizado": {
+          "type": "string",
+          "description": "Data de realização no formato YYYY-MM-DD.",
+          "minLength": 10,
+          "maxLength": 10,
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "pacienteLogin": {
+          "type": "string",
+          "description": "Login exclusivo do paciente para retirada do exame.",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "pacienteSenha": {
+          "type": "string",
+          "description": "Senha exclusiva do paciente para retirada do exame.",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "arquivoNome": {
+          "type": "string",
+          "description": "Nome do arquivo PDF ou imagem anexado.",
+          "maxLength": 180
+        },
+        "arquivoMime": {
+          "type": "string",
+          "description": "Tipo MIME do arquivo anexado.",
+          "maxLength": 80
+        },
+        "arquivoConteudo": {
+          "type": "string",
+          "description": "Conteúdo do arquivo em Data URL / Base64 ou link externo para download.",
+          "maxLength": 850000
+        },
+        "laudoObservacoes": {
+          "type": "string",
+          "description": "Observações ou instruções para o paciente.",
+          "maxLength": 1000
+        },
+        "retiradoEm": {
+          "type": "string",
+          "description": "Data e hora em que o paciente retirou o exame online.",
+          "maxLength": 40
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp de criação."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp de atualização."
+        }
+      },
+      "required": [
+        "ownerId",
+        "examRecordId",
+        "seqNumber",
+        "pedidoEmed",
+        "pacienteNome",
+        "exameTipo",
+        "dataRealizado",
+        "pacienteLogin",
+        "pacienteSenha",
+        "arquivoNome",
+        "arquivoMime",
+        "arquivoConteudo",
+        "laudoObservacoes",
+        "retiradoEm",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "ClinicConfig": {
+      "title": "ClinicConfig",
+      "description": "Configurações de metas mensais e parâmetros operacionais do Centro Diagnóstico.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "UID do usuário proprietário.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "unidadePadrao": {
+          "type": "string",
+          "description": "Unidade indicadora padrão para novos lançamentos.",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "metaMensalExames": {
+          "type": "integer",
+          "description": "Meta mensal de quantidade de exames realizados."
+        },
+        "metaMensalFaturamento": {
+          "type": "number",
+          "description": "Meta mensal de faturamento bruto em R$."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp de criação no servidor."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp de atualização no servidor."
+        }
+      },
+      "required": [
+        "ownerId",
+        "unidadePadrao",
+        "metaMensalExames",
+        "metaMensalFaturamento",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AdminRecord": {
+      "title": "AdminRecord",
+      "description": "Registro de administrador do sistema.",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "Email do administrador.",
+          "minLength": 3,
+          "maxLength": 120
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp de criação."
+        }
+      },
+      "required": ["email", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/exam_records/{recordId}": {
+      "schema": { "$ref": "#/entities/ExamRecord" },
+      "description": "Coleção de exames realizados lançados na planilha do Centro Diagnóstico São Mateus 1."
+    },
+    "/pricing_rules/{ruleId}": {
+      "schema": { "$ref": "#/entities/PricingRule" },
+      "description": "Regras de precificação e repasse automático por convênio e exame."
+    },
+    "/exam_deliveries/{deliveryId}": {
+      "schema": { "$ref": "#/entities/ExamDelivery" },
+      "description": "Coleção de exames anexados com login e senha individual por paciente para retirada pública online."
+    },
+    "/clinic_configs/{userId}": {
+      "schema": { "$ref": "#/entities/ClinicConfig" },
+      "description": "Configuração de metas e padrões operacionais do usuário."
+    },
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/AdminRecord" },
+      "description": "Coleção somente-leitura para verificação de privilégios administrativos."
+    }
+  }
+}
